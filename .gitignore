@@ -1,3 +1,8 @@
+#intellij
+.idea
+*.iml
+
+# playbooks
 playbooks/roles/*
 playbooks/*.retry
 !playbooks/roles/ansible-elasticsearch-consul
@@ -7,3 +12,6 @@ playbooks/*.retry
 !playbooks/roles/ansible-maintain
 !playbooks/roles/ansible-marathon-consul
 !playbooks/roles/ansible-zookeeper-consul
+
+# infrastructure releated
+iaas/aws/infrastructure.json
