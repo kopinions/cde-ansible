@@ -70,23 +70,23 @@
 	```
 4. 准备host文件
 	在项目的根目录下，有两个示例的host配置文件，```local_standalone```, ```local_ha```, 分别为本地的单机方案，和本地的高可用方案。可以使用根据自己的需要进行相应的修改
-5. 获取依赖的ansible role
+5. 准备相应的extravars.json 文件
+    根据生成的infrastructure.json 来准备相应的extravars.json 文件,具体参照<a href="#extravars">基础配置文件</a>
+6. 获取依赖的ansible role
 	
 	```
-	git clone https://github.com/sjkyspa/stacks.git $GOPATH/src/github.com/sjkyspa/stacks
-	cd $GOPATH/src/github.com/sjkyspa/stacks
 	ansible-galaxy install -r playbooks/roles.yml -p playbooks/roles --force
 	```	
-6. 基础环境部署
+7. 基础环境部署
 
 	```
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/master.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/elasticsearch.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/slave.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/ceph.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/flocker-agent.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/elasticsearch.yml
-	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_standalone -s -vvvv playbooks/flocker-control.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/master.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/elasticsearch.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/slave.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/ceph.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/flocker-agent.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/elasticsearch.yml
+	ansible-playbook --extra-vars="@extravars_standlone.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_standalone playbooks/flocker-control.yml
 	```
 
 ### AWS
@@ -110,14 +110,19 @@
    在运行过```./provision.sh cde```之后,会在iaas/aws/目录下生成当前基础结构的ip,文件名为```infrastructure.json```,根据机器的IP来准备相应的hosts文件,可以参考```hosts_ha```进行相应的准备
 5. 准备相应的extravars.json 文件
     根据生成的infrastructure.json 来准备相应的extravars.json 文件,具体参照<a href="#extravars">基础配置文件</a>
-5. 基础环境部署
+6. 获取依赖的ansible role
+	
+	```
+	ansible-galaxy install -r playbooks/roles.yml -p playbooks/roles --force
+	```
+7. 基础环境部署
 
 	```
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/master.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/elasticsearch.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/slave.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/ceph.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/flocker-agent.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/elasticsearch.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/hosts_ha -s -vvvv playbooks/flocker-control.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/master.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/elasticsearch.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/slave.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/ceph.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-agent.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/elasticsearch.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-control.yml
 	```
