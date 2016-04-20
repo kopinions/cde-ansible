@@ -70,8 +70,14 @@
 	```
 4. 准备host文件
 	在项目的根目录下，有两个示例的host配置文件，```local_standalone```, ```local_ha```, 分别为本地的单机方案，和本地的高可用方案。可以使用根据自己的需要进行相应的修改
+5. 获取依赖的ansible role
 	
-4. 初始化
+	```
+	git clone https://github.com/sjkyspa/stacks.git $GOPATH/src/github.com/sjkyspa/stacks
+	cd $GOPATH/src/github.com/sjkyspa/stacks
+	ansible-galaxy install -r playbooks/roles.yml -p playbooks/roles --force
+	```	
+6. 初始化
 
 	```
 	ansible-playbook --extra-vars="@.extravars.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=playbooks/local_standalone -s -vvvv playbooks/master.yml
