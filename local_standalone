@@ -1,0 +1,40 @@
+[zookeeper]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[marathon]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[consul-server]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[mesos-master]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[mesos-slave]
+192.168.50.101 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.102 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.103 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[mons]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[osds]
+192.168.50.101 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.102 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.103 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[flocker-agent]
+192.168.50.101 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.102 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.103 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[flocker-control]
+192.168.50.101 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[elasticsearch-master]
+192.168.50.201 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+
+[elasticsearch-node]
+192.168.50.101 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.102 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+192.168.50.103 ansible_ssh_user=vagrant  ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
