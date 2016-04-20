@@ -1,0 +1,14 @@
+[
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "awsgo"
+    },
+    {
+        "ParameterKey": "MasterInstanceType",
+        "ParameterValue": "m1.medium"
+    },
+    {
+        "ParameterKey": "SlaveInstanceType",
+        "ParameterValue": "m1.medium"
+    }
+]

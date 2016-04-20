@@ -1,0 +1,1292 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample: Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based on the region in which the stack is run. This example creates an EC2 security group for the instance to give you SSH access. **WARNING** This template creates an Amazon EC2 instance. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Parameters": {
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
+    },
+    "PublicIp": {
+      "Description": "The IP address range public",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    },
+    "MasterInstanceType": {
+      "Description": "Master EC2 instance type",
+      "Type": "String",
+      "Default": "t2.small",
+      "AllowedValues": [
+        "t1.micro",
+        "t2.nano",
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large",
+        "m1.small",
+        "m1.medium",
+        "m1.large",
+        "m1.xlarge",
+        "m2.xlarge",
+        "m2.2xlarge",
+        "m2.4xlarge",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "m4.large",
+        "m4.xlarge",
+        "m4.2xlarge",
+        "m4.4xlarge",
+        "m4.10xlarge",
+        "c1.medium",
+        "c1.xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "c4.large",
+        "c4.xlarge",
+        "c4.2xlarge",
+        "c4.4xlarge",
+        "c4.8xlarge",
+        "g2.2xlarge",
+        "g2.8xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "d2.xlarge",
+        "d2.2xlarge",
+        "d2.4xlarge",
+        "d2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge",
+        "cr1.8xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "SlaveInstanceType": {
+      "Description": "Slave EC2 instance type",
+      "Type": "String",
+      "Default": "t2.small",
+      "AllowedValues": [
+        "t1.micro",
+        "t2.nano",
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large",
+        "m1.small",
+        "m1.medium",
+        "m1.large",
+        "m1.xlarge",
+        "m2.xlarge",
+        "m2.2xlarge",
+        "m2.4xlarge",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "m4.large",
+        "m4.xlarge",
+        "m4.2xlarge",
+        "m4.4xlarge",
+        "m4.10xlarge",
+        "c1.medium",
+        "c1.xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "c4.large",
+        "c4.xlarge",
+        "c4.2xlarge",
+        "c4.4xlarge",
+        "c4.8xlarge",
+        "g2.2xlarge",
+        "g2.8xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "d2.xlarge",
+        "d2.2xlarge",
+        "d2.4xlarge",
+        "d2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge",
+        "cr1.8xlarge",
+        "cc2.8xlarge",
+        "cg1.4xlarge"
+      ],
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "SSHLocation": {
+      "Description": "The IP address range that can be used to SSH to the EC2 instances",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    }
+  },
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "t1.micro": {
+        "Arch": "PV64"
+      },
+      "t2.nano": {
+        "Arch": "HVM64"
+      },
+      "t2.micro": {
+        "Arch": "HVM64"
+      },
+      "t2.small": {
+        "Arch": "HVM64"
+      },
+      "t2.medium": {
+        "Arch": "HVM64"
+      },
+      "t2.large": {
+        "Arch": "HVM64"
+      },
+      "m1.small": {
+        "Arch": "PV64"
+      },
+      "m1.medium": {
+        "Arch": "PV64"
+      },
+      "m1.large": {
+        "Arch": "PV64"
+      },
+      "m1.xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.2xlarge": {
+        "Arch": "PV64"
+      },
+      "m2.4xlarge": {
+        "Arch": "PV64"
+      },
+      "m3.medium": {
+        "Arch": "HVM64"
+      },
+      "m3.large": {
+        "Arch": "HVM64"
+      },
+      "m3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "m3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "m4.large": {
+        "Arch": "HVM64"
+      },
+      "m4.xlarge": {
+        "Arch": "HVM64"
+      },
+      "m4.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "m4.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "m4.10xlarge": {
+        "Arch": "HVM64"
+      },
+      "c1.medium": {
+        "Arch": "PV64"
+      },
+      "c1.xlarge": {
+        "Arch": "PV64"
+      },
+      "c3.large": {
+        "Arch": "HVM64"
+      },
+      "c3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "c3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "c4.large": {
+        "Arch": "HVM64"
+      },
+      "c4.xlarge": {
+        "Arch": "HVM64"
+      },
+      "c4.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "c4.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "c4.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "g2.2xlarge": {
+        "Arch": "HVMG2"
+      },
+      "g2.8xlarge": {
+        "Arch": "HVMG2"
+      },
+      "r3.large": {
+        "Arch": "HVM64"
+      },
+      "r3.xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "r3.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "i2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "d2.xlarge": {
+        "Arch": "HVM64"
+      },
+      "d2.2xlarge": {
+        "Arch": "HVM64"
+      },
+      "d2.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "d2.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "hi1.4xlarge": {
+        "Arch": "HVM64"
+      },
+      "hs1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "cr1.8xlarge": {
+        "Arch": "HVM64"
+      },
+      "cc2.8xlarge": {
+        "Arch": "HVM64"
+      }
+    },
+    "AWSInstanceType2NATArch": {
+      "t1.micro": {
+        "Arch": "NATPV64"
+      },
+      "t2.nano": {
+        "Arch": "NATHVM64"
+      },
+      "t2.micro": {
+        "Arch": "NATHVM64"
+      },
+      "t2.small": {
+        "Arch": "NATHVM64"
+      },
+      "t2.medium": {
+        "Arch": "NATHVM64"
+      },
+      "t2.large": {
+        "Arch": "NATHVM64"
+      },
+      "m1.small": {
+        "Arch": "NATPV64"
+      },
+      "m1.medium": {
+        "Arch": "NATPV64"
+      },
+      "m1.large": {
+        "Arch": "NATPV64"
+      },
+      "m1.xlarge": {
+        "Arch": "NATPV64"
+      },
+      "m2.xlarge": {
+        "Arch": "NATPV64"
+      },
+      "m2.2xlarge": {
+        "Arch": "NATPV64"
+      },
+      "m2.4xlarge": {
+        "Arch": "NATPV64"
+      },
+      "m3.medium": {
+        "Arch": "NATHVM64"
+      },
+      "m3.large": {
+        "Arch": "NATHVM64"
+      },
+      "m3.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "m3.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "m4.large": {
+        "Arch": "NATHVM64"
+      },
+      "m4.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "m4.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "m4.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "m4.10xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c1.medium": {
+        "Arch": "NATPV64"
+      },
+      "c1.xlarge": {
+        "Arch": "NATPV64"
+      },
+      "c3.large": {
+        "Arch": "NATHVM64"
+      },
+      "c3.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c3.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c3.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c3.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c4.large": {
+        "Arch": "NATHVM64"
+      },
+      "c4.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c4.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c4.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "c4.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "g2.2xlarge": {
+        "Arch": "NATHVMG2"
+      },
+      "g2.8xlarge": {
+        "Arch": "NATHVMG2"
+      },
+      "r3.large": {
+        "Arch": "NATHVM64"
+      },
+      "r3.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "r3.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "r3.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "r3.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "i2.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "i2.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "i2.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "i2.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "d2.xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "d2.2xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "d2.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "d2.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "hi1.4xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "hs1.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "cr1.8xlarge": {
+        "Arch": "NATHVM64"
+      },
+      "cc2.8xlarge": {
+        "Arch": "NATHVM64"
+      }
+    },
+    "AWSRegionArch2AMI": {
+      "us-east-1": {
+        "PV64": "ami-5fb8c835",
+        "HVM64": "ami-60b6c60a",
+        "HVMG2": "ami-e998ea83"
+      },
+      "us-west-2": {
+        "PV64": "ami-d93622b8",
+        "HVM64": "ami-f0091d91",
+        "HVMG2": "ami-315f4850"
+      },
+      "us-west-1": {
+        "PV64": "ami-56ea8636",
+        "HVM64": "ami-d5ea86b5",
+        "HVMG2": "ami-943956f4"
+      },
+      "eu-west-1": {
+        "PV64": "ami-95e33ce6",
+        "HVM64": "ami-bff32ccc",
+        "HVMG2": "ami-83fd23f0"
+      },
+      "eu-central-1": {
+        "PV64": "ami-794a5915",
+        "HVM64": "ami-bc5b48d0",
+        "HVMG2": "ami-ba1a09d6"
+      },
+      "ap-northeast-1": {
+        "PV64": "ami-393c1957",
+        "HVM64": "ami-383c1956",
+        "HVMG2": "ami-08e5c166"
+      },
+      "ap-northeast-2": {
+        "PV64": "NOT_SUPPORTED",
+        "HVM64": "ami-249b554a",
+        "HVMG2": "NOT_SUPPORTED"
+      },
+      "ap-southeast-1": {
+        "PV64": "ami-34bd7a57",
+        "HVM64": "ami-c9b572aa",
+        "HVMG2": "ami-5a15d239"
+      },
+      "ap-southeast-2": {
+        "PV64": "ami-ced887ad",
+        "HVM64": "ami-48d38c2b",
+        "HVMG2": "ami-0c1a446f"
+      },
+      "sa-east-1": {
+        "PV64": "ami-7d15ad11",
+        "HVM64": "ami-6817af04",
+        "HVMG2": "NOT_SUPPORTED"
+      },
+      "cn-north-1": {
+        "PV64": "ami-18ac6575",
+        "HVM64": "ami-43a36a2e",
+        "HVMG2": "NOT_SUPPORTED"
+      }
+    }
+  },
+  "Resources": {
+    "ELBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "ELB ingress group",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "2222",
+            "ToPort": "2222",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "da4f3447-b69c-42f8-a4c2-5ab9e955c625"
+        }
+      }
+    },
+    "MasterSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security for the master",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8500",
+            "ToPort": "8500",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "5050",
+            "ToPort": "5050",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          },
+          {
+            "IpProtocol": "-1",
+            "FromPort": "-1",
+            "ToPort": "-1",
+            "SourceSecurityGroupName": {
+              "Ref": "RouterSecurityGroup"
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "d07a905c-8ea6-4d43-b6e2-ce07aead8eaf"
+        }
+      }
+    },
+    "RouterSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Router SecurityGroup",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": {
+              "Ref": "PublicIp"
+            }
+          },
+          {
+            "IpProtocol": "-1",
+            "FromPort": "-1",
+            "ToPort": "-1",
+            "SourceSecurityGroupName": {
+              "Ref": "ELBSecurityGroup"
+            }
+          }
+        ]
+      }
+    },
+    "SlaveSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security for the slave",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "SSHLocation"
+            }
+          },
+          {
+            "IpProtocol": "-1",
+            "FromPort": "-1",
+            "ToPort": "-1",
+            "SourceSecurityGroupName": {
+              "Ref": "RouterSecurityGroup"
+            }
+          },
+          {
+            "IpProtocol": "-1",
+            "FromPort": "-1",
+            "ToPort": "-1",
+            "SourceSecurityGroupName": {
+              "Ref": "MasterSecurityGroup"
+            }
+          }
+        ]
+      }
+    },
+    "Master2Master": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "MasterSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "MasterSecurityGroup"
+        }
+      }
+    },
+    "Slave2Slave": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "SlaveSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "SlaveSecurityGroup"
+        }
+      }
+    },
+    "Slave2Master": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "MasterSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "SlaveSecurityGroup"
+        }
+      }
+    },
+    "Slave2Router": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "RouterSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "SlaveSecurityGroup"
+        }
+      }
+    },
+    "Master2Router": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "RouterSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "MasterSecurityGroup"
+        }
+      }
+    },
+    "Router2ELB": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "ELBSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "RouterSecurityGroup"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "6cc8672c-7da9-444f-969d-7e3fd2f57479"
+        }
+      }
+    },
+    "ELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ELBSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ],
+        "AvailabilityZones": [
+          "us-west-1a"
+        ],
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "80",
+            "Protocol": "TCP"
+          },
+          {
+            "LoadBalancerPort": "2222",
+            "InstancePort": "2222",
+            "Protocol": "TCP"
+          }
+        ],
+        "Instances": [
+        ],
+        "HealthCheck": {
+          "Target": "TCP:80",
+          "HealthyThreshold": "3",
+          "UnhealthyThreshold": "5",
+          "Interval": "30",
+          "Timeout": "5"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "ELB"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "6b007234-506e-42ac-b2a9-2be24bf17392"
+        }
+      }
+    },
+    "Master1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroups": [
+          {
+            "Ref": "MasterSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "MasterInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+           {
+              "DeviceName" : "/dev/sdb",
+              "Ebs" : {
+                 "VolumeType" : "standard",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           },
+           {
+              "DeviceName" : "/dev/sda1",
+              "Ebs" : {
+                 "VolumeType" : "gp2",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Master"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "0e516841-5728-480f-84e2-b027390944f3"
+        }
+      }
+    },
+    "Master2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroupIds": [
+          {
+            "Ref": "MasterSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "MasterInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+           {
+              "DeviceName" : "/dev/sdb",
+              "Ebs" : {
+                 "VolumeType" : "standard",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           },
+           {
+              "DeviceName" : "/dev/sda1",
+              "Ebs" : {
+                 "VolumeType" : "gp2",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Master"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "5a693ff3-6ad0-4447-8e5b-458587193d57"
+        }
+      }
+    },
+    "Master3": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroupIds": [
+          {
+            "Ref": "MasterSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "MasterInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+           {
+              "DeviceName" : "/dev/sdb",
+              "Ebs" : {
+                 "VolumeType" : "standard",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           },
+           {
+              "DeviceName" : "/dev/sda1",
+              "Ebs" : {
+                 "VolumeType" : "gp2",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Master"
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "d3196b43-8794-44b9-995c-4880355b95be"
+        }
+      }
+    },
+    "Slave1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroupIds": [
+          {
+            "Ref": "SlaveSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "SlaveInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+           {
+              "DeviceName" : "/dev/sdb",
+              "Ebs" : {
+                 "VolumeType" : "standard",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           },
+           {
+              "DeviceName" : "/dev/sda1",
+              "Ebs" : {
+                 "VolumeType" : "gp2",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Slave1"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Slave2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroupIds": [
+          {
+            "Ref": "SlaveSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "SlaveInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+           {
+              "DeviceName" : "/dev/sdb",
+              "Ebs" : {
+                 "VolumeType" : "standard",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           },
+           {
+              "DeviceName" : "/dev/sda1",
+              "Ebs" : {
+                 "VolumeType" : "gp2",
+                 "DeleteOnTermination" : "true",
+                 "VolumeSize" : "20"
+              }
+           }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Slave2"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Slave3": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SecurityGroupIds": [
+          {
+            "Ref": "SlaveSecurityGroup"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "InstanceType": {
+          "Ref": "SlaveInstanceType"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "ImageId": "ami-b085eed0",
+        "BlockDeviceMappings" : [
+          {
+            "DeviceName" : "/dev/sdb",
+            "Ebs" : {
+              "VolumeType" : "standard",
+              "DeleteOnTermination" : "true",
+              "VolumeSize" : "20"
+            }
+          },
+          {
+            "DeviceName" : "/dev/sda1",
+            "Ebs" : {
+              "VolumeType" : "gp2",
+              "DeleteOnTermination" : "true",
+              "VolumeSize" : "20"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Slave3"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "Masters": {
+      "Description": "Masters",
+      "Value": {
+        "Fn::Join": [
+          "|",
+          [
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Master1",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Master1",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Master2",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Master2",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Master3",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Master3",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "Slaves": {
+      "Description": "Slaves",
+      "Value": {
+        "Fn::Join": [
+          "|",
+          [
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Slave1",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Slave1",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Slave2",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Slave2",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            },
+            {
+              "Fn::Join": [
+                " ",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Slave3",
+                      "PublicIp"
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "Slave3",
+                      "PrivateIp"
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

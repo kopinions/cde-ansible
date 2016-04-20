@@ -1,0 +1,40 @@
+#!/bin/sh -e
+
+pushd "$(dirname $0)" &>/dev/null
+BASEDIR=$(pwd)
+
+puts_green() {
+  echo $'\033[0;32m'"      $@" $'\033[0m'
+}
+
+puts_red() {
+  echo $'\033[0;31m'"      $@" $'\033[0m'
+}
+
+case $1 in
+    "aws" )
+        packer build -var ACCESS_KEY=$2 -var SECRET_KEY=$3 -var HOME=$HOME -only amazon-ebs base.json |tee -a /tmp/base.log
+        if [ "$?" != "0" ]; then
+            echo "Build the base image fail please check" | puts_red
+            exit 1
+        fi
+        BASEAMI_ID=$(tail -n 1 /tmp/base.log |awk -F':' '{print $2}')
+        packer build -var ACCESS_KEY=$2 -var SECRET_KEY=$3 -var HOME=$HOME -var SOURCE_AMI=$BASEAMI_ID -only amazon-ebs master.json
+        packer build -var ACCESS_KEY=$2 -var SECRET_KEY=$3 -var HOME=$HOME -var SOURCE_AMI=$BASEAMI_ID -only amazon-ebs slave.json
+
+        ;;
+    "vagrant" )
+         packer build  -var HOME=$HOME -only virtualbox-ovf base.json
+         vagrant box add packer_virtualbox-ovf_virtualbox_base.box --name cdebase --force
+         packer build -var HOME=$HOME -only virtualbox-ovf master.json
+         vagrant box add packer_virtualbox-ovf_virtualbox_master.box --name master --force
+         packer build -var HOME=$HOME -only virtualbox-ovf slave.json
+         vagrant box add packer_virtualbox-ovf_virtualbox_slave.box --name slave --force
+         puts_green "All the boxes are added: master, slave"
+         ;;
+    *)
+        echo "pack aws access_key secret_key"
+        echo "pack vagrant $HOME";;
+esac
+
+popd &>/dev/null

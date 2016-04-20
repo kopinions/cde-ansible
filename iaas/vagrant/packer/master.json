@@ -1,0 +1,44 @@
+{
+  "variables": {
+    "ACCESS_KEY": "",
+    "SECRET_KEY": "",
+    "SOURCE_AMI": "",
+    "HOME": "/Users/morpheus"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "access_key": "{{user `ACCESS_KEY`}}",
+      "secret_key": "{{user `SECRET_KEY`}}",
+      "region": "us-west-1",
+      "instance_type": "m1.medium",
+      "ssh_username": "ubuntu",
+      "ami_name": "master {{isotime | clean_ami_name}}",
+      "source_ami": "{{user `SOURCE_AMI`}}"
+    },
+    {
+      "type": "virtualbox-ovf",
+      "source_path": "{{user `HOME`}}/.vagrant.d/boxes/cdebase/0/virtualbox/box.ovf",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "headless": true,
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "master.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": false,
+        "compression_level": 9,
+        "output": "packer_{{.BuildName}}_{{.Provider}}_master.box"
+      }
+    ]
+  ]
+}
