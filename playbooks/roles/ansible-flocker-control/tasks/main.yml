@@ -1,0 +1,64 @@
+---
+
+- name: Copy ceph keyring
+  copy:
+    src: fetch/{{ fsid }}/etc/ceph/ceph.client.admin.keyring
+    dest: /etc/ceph
+
+- apt: update_cache=yes
+
+- name: Install apt-transport-https
+  apt: name=apt-transport-https force=yes
+
+- name: Install software-properties-common
+  apt: name=software-properties-common force=yes
+
+- name: Add repo
+  apt_repository: repo="deb https://clusterhq-archive.s3.amazonaws.com/ubuntu/14.04/amd64 /"
+
+- apt: update_cache=yes
+
+- name: Install flocker cli
+  apt: name=clusterhq-flocker-cli force=yes
+
+- name: Install flocker node
+  apt: name=clusterhq-flocker-node force=yes
+
+- name: Create flocker config directory
+  file: path=/etc/flocker state=directory
+
+- name: Copy cluster crt
+  copy:
+    src: bakedcerts/cluster.crt
+    dest: /etc/flocker/cluster.crt
+
+- name: Copy cluster key
+  copy:
+    src: bakedcerts/cluster.key
+    dest: /etc/flocker/cluster.key
+
+- name: Generate control cert
+  command: flocker-ca create-control-certificate {{ control_hostname }}
+  args:
+    chdir: /etc/flocker
+
+- name: Rename control key
+  command: mv control-{{ control_hostname }}.key control-service.key
+  args:
+    chdir: /etc/flocker
+
+- name: Rename control crt
+  command: mv control-{{ control_hostname }}.crt control-service.crt
+  args:
+    chdir: /etc/flocker
+
+- name: Set control config
+  template: src=templates/flocker-control.j2 dest=/etc/init/flocker-control.override
+
+- name: register control api
+  lineinfile: dest=/etc/services line='flocker-control-api       4523/tcp' insertafter=EOF
+
+- name: register control agent
+  lineinfile: dest=/etc/services line='flocker-control-agent     4524/tcp' insertafter=EOF
+
+- service: name=flocker-control state=restarted

@@ -1,0 +1,10 @@
+---
+
+- name: Restart flocker docker plugin
+  service: name=flocker-docker-plugin state=restarted
+
+- name: Restart flocker container agent
+  service: name=flocker-container-agent state=restarted
+
+- name: Restart flocker dataset agent
+  service: name=flocker-dataset-agent state=restarted

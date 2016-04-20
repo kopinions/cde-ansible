@@ -1,0 +1,4 @@
+---
+beats_template_version: 1.2.1
+beats_template_pkg: beats-dashboards-{{beats_template_version}}.zip
+elasticsearch_endpoint: localhost:9200

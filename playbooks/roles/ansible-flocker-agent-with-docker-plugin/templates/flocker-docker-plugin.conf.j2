@@ -1,0 +1,12 @@
+# flocker-plugin - flocker-docker-plugin job file
+
+description "Flocker Plugin service"
+author "ClusterHQ <support@clusterhq.com>"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+env FLOCKER_CONTROL_SERVICE_BASE_URL=https://{{ control_hostname }}:4523/v1
+env MY_NETWORK_IDENTITY={{ ipaddr }}
+exec /usr/sbin/flocker-docker-plugin --logfile=/var/log/flocker/flocker-docker-plugin.log

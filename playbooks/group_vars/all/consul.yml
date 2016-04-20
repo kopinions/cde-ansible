@@ -1,0 +1,12 @@
+---
+consul_version: 0.6.3
+consul_install_nginx: false
+consul_install_consul_cli: false
+consul_install_nginx_config: false
+consul_enable_nginx_config: false
+consul_retry_join: true
+consul_join_at_start: true
+consul_advertise_address: "{{ipaddr}}"
+consul_client_address: "0.0.0.0"
+#consul_servers: "{{}}" need filled
+consul_node_name: "{{ipaddr}}"

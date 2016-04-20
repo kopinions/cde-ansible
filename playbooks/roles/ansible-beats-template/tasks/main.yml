@@ -1,0 +1,10 @@
+---
+
+- name: Get beats templates
+  get_url: url=https://download.elastic.co/beats/dashboards/{{beats_template_pkg}} dest=/tmp/
+
+- name: Extract pkg
+  unarchive: src=/tmp/{{beats_template_pkg}} dest=/tmp/ copy=no
+
+- name: Load templates
+  command: ./load.sh -url {{elasticsearch_endpoint}} chdir=/tmp/beats-dashboards-{{beats_template_version}}

@@ -1,0 +1,7 @@
+---
+- name: install the docker clean cron
+  cron: name="docker clean" job="docker ps -a -q -f 'status=exited'|xargs docker rm" backup=yes state=present
+
+- name: install the docker image clean
+  cron: name="docker image clean" job="docker images -q -f 'dangling=true'|xargs docker rmi" backup=yes state=present
+

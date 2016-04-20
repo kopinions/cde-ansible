@@ -1,0 +1,2 @@
+---
+zookeeper_bind_address: "{{ansible_eth0.ipv4.address}}"

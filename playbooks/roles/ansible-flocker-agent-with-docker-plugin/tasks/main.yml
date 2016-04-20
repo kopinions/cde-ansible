@@ -1,0 +1,90 @@
+---
+- apt: update_cache=yes
+
+- name: Install apt-transport-https
+  apt: name=apt-transport-https force=yes
+
+- name: Install software-properties-common
+  apt: name=software-properties-common force=yes
+
+- name: Add repo
+  apt_repository: repo="deb https://clusterhq-archive.s3.amazonaws.com/ubuntu/14.04/amd64 /"
+
+- apt: update_cache=yes
+
+- name: Install flocker node
+  apt: name=clusterhq-flocker-node force=yes
+
+- name: Install plugin
+  apt: name=clusterhq-flocker-docker-plugin force=yes
+
+- name: Install flocker cli
+  apt: name=clusterhq-flocker-cli force=yes
+
+- name: Create flocker config directory
+  file: path=/etc/flocker state=directory
+
+- name: Copy cluster crt
+  copy:
+    src: bakedcerts/cluster.crt
+    dest: /etc/flocker/cluster.crt
+
+- name: Copy cluster key
+  copy:
+    src: bakedcerts/cluster.key
+    dest: /etc/flocker/cluster.key
+
+- name: Copy ceph keyring
+  copy:
+    src: fetch/{{ fsid }}/etc/ceph/ceph.client.admin.keyring
+    dest: /etc/ceph
+
+- name: Generate flocker node cert
+  shell: flocker-ca create-node-certificate | awk '{print $2}' | sed  's/\.crt\.//g'
+  args:
+    chdir: /etc/flocker
+  register: nodeca
+
+- name: Rename node crt
+  command: mv /etc/flocker/{{ nodeca.stdout }}.crt /etc/flocker/node.crt
+
+- name: Rename node key
+  command: mv /etc/flocker/{{ nodeca.stdout }}.key /etc/flocker/node.key
+
+- name: Copy plugin key
+  copy:
+    src: bakedcerts/plugin.key
+    dest: /etc/flocker/plugin.key
+
+- name: Copy plugin crt
+  copy:
+    src: bakedcerts/plugin.crt
+    dest: /etc/flocker/plugin.crt
+
+- name: Set agent config
+  template: src=templates/flocker-agent.j2 dest=/etc/flocker/agent.yml
+  notify:
+    - Restart flocker dataset agent
+
+- name: Set plugin config
+  template: src=templates/flocker-docker-plugin.conf.j2 dest=/etc/init/flocker-docker-plugin.conf
+  notify:
+    - Restart flocker docker plugin
+
+- name: Remove flocker driver
+  command: rm -rf /tmp/ceph-flocker-driver
+
+- name: Clone ceph flocker driver
+  git: repo=https://github.com/ClusterHQ/ceph-flocker-driver.git dest=/tmp/ceph-flocker-driver
+
+- name: Install ceph flocker driver
+  command: /opt/flocker/bin/python setup.py install
+  args:
+    chdir: /tmp/ceph-flocker-driver
+
+- name: Install python ceph lib
+  command: /opt/flocker/bin/pip install python-cephlibs
+  notify:
+    - Restart flocker container agent
+    - Restart flocker dataset agent
+    - Restart flocker docker plugin

@@ -1,0 +1,9 @@
+---
+
+- name: copy elasticsearch config
+  template: src=03-elasticsearch.json.j2
+      dest=/etc/consul.d/03-elasticsearch.json
+
+- name: restart consul
+  service: name=consul state=restarted enabled=yes
+

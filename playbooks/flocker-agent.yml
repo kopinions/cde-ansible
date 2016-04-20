@@ -1,0 +1,5 @@
+---
+- hosts: flocker-agent
+  become: True
+  roles:
+    - role: 'ansible-flocker-agent-with-docker-plugin'

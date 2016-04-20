@@ -1,0 +1,41 @@
+---
+- hosts: mesos-master
+  sudo: yes
+  roles:
+    - ansible-dnsmasq
+
+- hosts: zookeeper
+  sudo: yes
+  roles:
+    - ansible-java8
+    - ansible-zookeeper
+
+- hosts: consul-server
+  sudo: yes
+  roles:
+    - role: ansible-consul
+
+- hosts: mesos-master
+  sudo: yes
+  roles:
+    - role: ansible-mesos
+
+- hosts: marathon
+  sudo: yes
+  roles:
+    - ansible-marathon
+
+- hosts: zookeeper
+  sudo: yes
+  roles:
+    - ansible-zookeeper-consul
+
+- hosts: marathon
+  sudo: yes
+  roles:
+    - ansible-marathon-consul
+
+- hosts: mesos-master
+  roles:
+    - ansible-topbeat
+    - ansible-logstash

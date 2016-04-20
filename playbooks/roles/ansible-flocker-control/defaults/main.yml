@@ -1,0 +1,4 @@
+---
+
+control_hostname: "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"
+ipaddr:  "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"

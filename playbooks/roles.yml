@@ -1,0 +1,25 @@
+- src: https://github.com/sjkyspa/ansible-zookeeper.git
+
+- src: https://github.com/sjkyspa/ansible-dnsmasq.git
+
+- src: https://github.com/sjkyspa/ansible-consul.git
+
+- src: https://github.com/sjkyspa/ansible-java8.git
+
+- src: https://github.com/sjkyspa/ansible-docker.git
+
+- src: https://github.com/sjkyspa/ansible-mesos.git
+
+- src: https://github.com/sjkyspa/ansible-marathon.git
+
+- src: https://github.com/sjkyspa/ansible-topbeat.git
+
+- src: https://github.com/sjkyspa/ansible-elasticsearch.git
+
+- src: https://github.com/ceph/ansible-ceph-mon.git
+
+- src: https://github.com/ceph/ansible-ceph-osd.git
+
+- src: https://github.com/ceph/ansible-ceph-fetch-keys.git
+
+- src: https://github.com/sjkyspa/ansible-logstash.git

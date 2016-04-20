@@ -1,0 +1,13 @@
+{
+  "service": {
+    "name": "marathon",
+    "address": "{{marathon_bind_address}}",
+    "port": 8080,
+    "enableTagOverride": false,
+    "check": {
+       "http": "http://{{marathon_bind_address}}:8080/ping",
+       "interval": "3s",
+       "timeout": "2s"
+    }
+  }
+}

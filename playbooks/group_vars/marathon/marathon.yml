@@ -1,0 +1,8 @@
+---
+marathon_version: '0.15.3'
+marathon_bind_address: "{{ipaddr}}"
+haproxy_script_location: ""
+marathon_hostname: "{{ ipaddr }}"
+marathon_env_vars:
+  - "JAVA_OPTS={{ marathon_env_java_opts }}"
+  - "LIBPROCESS_IP={{ ipaddr }}"

@@ -1,0 +1,11 @@
+---
+mesos_ip: "{{ ipaddr }}"
+mesos_hostname: "{{ ipaddr }}"
+mesos_version: '0.25.0'
+mesos_package_version: '0.2.70'
+mesos_containerizers: "docker,mesos"
+mesos_install_mode: "master"
+mesos_quorum: 2
+mesos_additional_configs:
+  - name: LOG_LEVEL
+    value: WARNING

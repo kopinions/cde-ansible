@@ -1,0 +1,59 @@
+---
+- hosts: elasticsearch-master
+  roles:
+    - role: ansible-elasticsearch
+      es_instance_name: "{{inventory_hostname}}"
+      es_heap_size: "1g"
+      es_config:
+        node.name: "{{inventory_hostname}}"
+        discovery.zen.ping.multicast.enabled: false
+        discovery.zen.ping.unicast.hosts: "{{elasticsearch_masters}}"
+        http.port: 9200
+        transport.tcp.port: 9300
+        node.data: false
+        node.master: true
+        bootstrap.mlockall: false
+        network.bind_host: 0.0.0.0
+        network.publish_host: "{{ipaddr}}"
+  vars:
+    es_scripts: false
+    es_templates: false
+    es_version_lock: false
+    es_cluster_name: cde-cluster
+    es_plugins_reinstall: true
+    java: "oracle-java8-installer"
+    es_plugins:
+      - plugin: elasticsearch/license
+        version: latest
+
+- hosts: elasticsearch-node
+  roles:
+    - role: ansible-elasticsearch
+      es_instance_name: "{{inventory_hostname}}"
+      es_data_dirs: "/opt/elasticsearch"
+      es_config:
+        node.name: "{{inventory_hostname}}"
+        discovery.zen.ping.multicast.enabled: false,
+        discovery.zen.ping.unicast.hosts: "{{elasticsearch_masters}}"
+        http.port: 9200
+        transport.tcp.port: 9300
+        node.data: true
+        node.master: false
+        bootstrap.mlockall: false
+        network.bind_host: 0.0.0.0
+        network.publish_host: "{{ipaddr}}"
+  vars:
+    es_scripts: false
+    es_templates: false
+    es_version_lock: false
+    es_cluster_name: cde-cluster
+    es_plugins_reinstall: true
+    java: "oracle-java8-installer"
+    es_plugins:
+      - plugin: elasticsearch/license
+        version: latest
+
+- hosts: elasticsearch-master
+  roles:
+    - role: ansible-beats-template
+    - role: ansible-elasticsearch-consul

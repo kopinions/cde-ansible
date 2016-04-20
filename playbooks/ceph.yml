@@ -1,0 +1,11 @@
+---
+
+- hosts: mons
+  become: True
+  roles:
+    - ansible-ceph-mon
+
+- hosts: osds
+  become: True
+  roles:
+    - ansible-ceph-osd

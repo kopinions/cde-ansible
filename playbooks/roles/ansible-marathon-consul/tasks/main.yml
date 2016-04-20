@@ -1,0 +1,9 @@
+---
+
+- name: copy marathon config
+  template: src=02-marathon.json.j2
+      dest=/etc/consul.d/02-marathon.json
+
+- name: restart consul
+  service: name=consul state=restarted enabled=yes
+

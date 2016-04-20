@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "elasticsearch",
+    "address": "{{address}}",
+    "port": 9200,
+    "enableTagOverride": false,
+    "check": {
+        "script": "STATUS=`curl -sjkSL http://{{address}}:9200/_cluster/health|jq -r '.status'`; if [[ $STATUS =~ green ]]; then exit 0; elif [[ $STATUS =~ yellow ]]; then exit 1 ; else exit 127 ; fi",
+        "interval": "10s"
+    }
+  }
+}

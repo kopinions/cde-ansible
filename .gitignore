@@ -1,0 +1,9 @@
+playbooks/roles/*
+playbooks/*.retry
+!playbooks/roles/ansible-elasticsearch-consul
+!playbooks/roles/ansible-beats-template
+!playbooks/roles/ansible-flocker-agent-with-docker-plugin
+!playbooks/roles/ansible-flocker-control
+!playbooks/roles/ansible-maintain
+!playbooks/roles/ansible-marathon-consul
+!playbooks/roles/ansible-zookeeper-consul

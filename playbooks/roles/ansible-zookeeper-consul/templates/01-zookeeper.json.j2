@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "zookeeper",
+    "address": "{{zookeeper_bind_address}}",
+    "port": 2181,
+    "enableTagOverride": false,
+    "check": {
+       "script": "echo stat | nc -w 2 {{zookeeper_bind_address}} 2181 || exit 127",
+       "interval": "3s"
+    }
+  }
+}
