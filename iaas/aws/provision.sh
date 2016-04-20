@@ -54,40 +54,11 @@ done
 
 echo "All instance are initilized"
 export ANSIBLE_HOST_KEY_CHECKING=False
-OUTPUTS=$(aws --output=text cloudformation describe-stacks --stack-name=$STACK_NAME --query "Stacks[?StackName=='"$STACK_NAME"'].Outputs")
-MASTERS=$(echo "$OUTPUTS"|grep "Masters"|sed -e 's/[a-zA-Z]*//g'|sed -e 's/^[[:blank:]]*//g'|tr '|' '\n'|sed -e 's/[[:blank:]]/|/g')
-SLAVES=$(echo "$OUTPUTS"|grep "Slaves"|sed -e 's/[a-zA-Z]*//g'|sed -e 's/^[[:blank:]]*//g'|tr '|' '\n'|sed -e 's/[[:blank:]]/|/g')
+OUTPUTS=$(aws cloudformation describe-stacks --stack-name=$STACK_NAME --query "Stacks[?StackName=='"$STACK_NAME"'].Outputs")
+MASTERS=$(echo "$OUTPUTS"|jq -r '.[0][0].OutputValue')
+SLAVES=$(echo "$OUTPUTS"|jq -r '.[0][1].OutputValue')
+MASTER_JSON=$(echo $MASTERS|jq -R 'split("|")|map(split(" ")|{"public":.[0], "private":.[1]})')
+SLAVE_JSON=$(echo $SLAVES|jq -R 'split("|")|map(split(" ")|{"public":.[0], "private":.[1]})')
+jq -n --argjson master "$MASTER_JSON" --argjson slave "$SLAVE_JSON" '{"master": $master, "slave": $slave}' > infrastructure.json
 
-cd ../../
-
-PEM_PATH="$(pwd)/.env/awsgo.pem"
-
-cd contrib/aws
-
-FLOCKER_CONTROL=$(echo "$SLAVES"|awk -F'|' '{print $0}'|sed -ne '1p')
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[mesos-master]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' > hosts
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[mons]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[osds]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$SLAVES"|awk -v PEM_PATH=$PEM_PATH -F'|' '{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[marathon]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[consul-server]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$MASTERS"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[zookeeper]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$SLAVES"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[mesos-slave]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$SLAVES"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[flocker-agent]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-echo "$FLOCKER_CONTROL"|awk -v PEM_PATH=$PEM_PATH -F'|' 'BEGIN {print "[flocker-control]"}{print $1 " ansible_ssh_user=ubuntu ansible_ssh_private_key_file=" PEM_PATH " privateip=" $2}' >> hosts
-
-ZOOKEEPER_HOSTS=$(echo "$MASTERS"| awk -F'|' 'BEGIN{ORS = ""; print "[";} { print "\/\@"$2"\/\@"; } END { print "]"; }'| sed "s^\"^\\\\\"^g;s^\/\@\/\@^\", \"^g;s^\/\@^\"^g"|jq 'to_entries|map({address:.value, id: .key})|map(.id+=1)')
-echo $ZOOKEEPER_HOST
-CONSUL_HOSTS=$(echo "$MASTERS"| awk -F'|' 'BEGIN{ORS = ""; print "[";} { print "\/\@"$2"\/\@"; } END { print "]"; }'| sed "s^\"^\\\\\"^g;s^\/\@\/\@^\", \"^g;s^\/\@^\"^g")
-CONTROL_HOSTNAME=$(echo "$FLOCKER_CONTROL"| awk -F'|' '{print $2}')
-jq -n --argjson zk "$ZOOKEEPER_HOSTS" --argjson consul "$CONSUL_HOSTS" --arg control_hostname "$CONTROL_HOSTNAME" '{zookeeper_hosts:$zk, consul_servers:$consul, control_hostname:$control_hostname, devices: ["/dev/xvdb"]}' > .extra-vars.json
-
-cd ../../
-
-ansible-playbook --extra-vars="@$BASEDIR/.extra-vars.json" --connection=ssh --timeout=60 --inventory-file="$BASEDIR/hosts" -s playbooks/master.yml
-ansible-playbook --extra-vars="@$BASEDIR/.extra-vars.json" --connection=ssh --timeout=60 --inventory-file="$BASEDIR/hosts" -s playbooks/slave.yml
-cd playbooks
-ansible-playbook --extra-vars="@$BASEDIR/.extra-vars.json" --connection=ssh --timeout=60 --inventory-file="$BASEDIR/hosts" -s ceph.yml -vvvv
-cd ../
-ansible-playbook --extra-vars="@$BASEDIR/.extra-vars.json" --connection=ssh --timeout=60 --inventory-file="$BASEDIR/hosts" -s playbooks/flocker-agent.yml
-ansible-playbook --extra-vars="@$BASEDIR/.extra-vars.json" --connection=ssh --timeout=60 --inventory-file="$BASEDIR/hosts" -s playbooks/flocker-control.yml
+echo "Address all in the infrastructure.json file"

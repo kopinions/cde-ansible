@@ -140,6 +140,22 @@
       ],
       "ConstraintDescription": "must be a valid EC2 instance type."
     },
+    "MasterImageId": {
+      "Description": "Master Image ID",
+      "Type": "String"
+    },
+    "SlaveImageId": {
+      "Description": "Slave Image ID",
+      "Type": "String"
+    },
+    "AvailabilityZone": {
+      "Description": "Slave EC2 instance type",
+      "Type": "String",
+      "Default": "ap-southeast-1a",
+      "AllowedValues": [
+        "ap-southeast-1a"
+      ]
+    },
     "SSHLocation": {
       "Description": "The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
@@ -554,11 +570,6 @@
             }
           }
         ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "da4f3447-b69c-42f8-a4c2-5ab9e955c625"
-        }
       }
     },
     "MasterSecurityGroup": {
@@ -607,11 +618,6 @@
             }
           }
         ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "d07a905c-8ea6-4d43-b6e2-ce07aead8eaf"
-        }
       }
     },
     "RouterSecurityGroup": {
@@ -760,11 +766,6 @@
         "SourceSecurityGroupName": {
           "Ref": "RouterSecurityGroup"
         }
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "6cc8672c-7da9-444f-969d-7e3fd2f57479"
-        }
       }
     },
     "ELB": {
@@ -779,7 +780,9 @@
           }
         ],
         "AvailabilityZones": [
-          "us-west-1a"
+          {
+            "Ref": "AvailabilityZone"
+          }
         ],
         "Listeners": [
           {
@@ -839,25 +842,29 @@
         "InstanceType": {
           "Ref": "MasterInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
-           {
-              "DeviceName" : "/dev/sdb",
-              "Ebs" : {
-                 "VolumeType" : "standard",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           },
-           {
-              "DeviceName" : "/dev/sda1",
-              "Ebs" : {
-                 "VolumeType" : "gp2",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           }
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "MasterImageId"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          }
         ],
         "Tags": [
           {
@@ -896,25 +903,29 @@
         "InstanceType": {
           "Ref": "MasterInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
-           {
-              "DeviceName" : "/dev/sdb",
-              "Ebs" : {
-                 "VolumeType" : "standard",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           },
-           {
-              "DeviceName" : "/dev/sda1",
-              "Ebs" : {
-                 "VolumeType" : "gp2",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           }
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "MasterImageId"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          }
         ],
         "Tags": [
           {
@@ -953,25 +964,29 @@
         "InstanceType": {
           "Ref": "MasterInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
-           {
-              "DeviceName" : "/dev/sdb",
-              "Ebs" : {
-                 "VolumeType" : "standard",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           },
-           {
-              "DeviceName" : "/dev/sda1",
-              "Ebs" : {
-                 "VolumeType" : "gp2",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           }
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "MasterImageId"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          }
         ],
         "Tags": [
           {
@@ -1010,25 +1025,29 @@
         "InstanceType": {
           "Ref": "SlaveInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
-           {
-              "DeviceName" : "/dev/sdb",
-              "Ebs" : {
-                 "VolumeType" : "standard",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           },
-           {
-              "DeviceName" : "/dev/sda1",
-              "Ebs" : {
-                 "VolumeType" : "gp2",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           }
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "SlaveImageId"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          }
         ],
         "Tags": [
           {
@@ -1062,25 +1081,29 @@
         "InstanceType": {
           "Ref": "SlaveInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
-           {
-              "DeviceName" : "/dev/sdb",
-              "Ebs" : {
-                 "VolumeType" : "standard",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           },
-           {
-              "DeviceName" : "/dev/sda1",
-              "Ebs" : {
-                 "VolumeType" : "gp2",
-                 "DeleteOnTermination" : "true",
-                 "VolumeSize" : "20"
-              }
-           }
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "SlaveImageId"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
+            }
+          }
         ],
         "Tags": [
           {
@@ -1114,23 +1137,27 @@
         "InstanceType": {
           "Ref": "SlaveInstanceType"
         },
-        "AvailabilityZone": "us-west-1a",
-        "ImageId": "ami-b085eed0",
-        "BlockDeviceMappings" : [
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "ImageId": {
+          "Ref": "SlaveImageId"
+        },
+        "BlockDeviceMappings": [
           {
-            "DeviceName" : "/dev/sdb",
-            "Ebs" : {
-              "VolumeType" : "standard",
-              "DeleteOnTermination" : "true",
-              "VolumeSize" : "20"
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeType": "standard",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
             }
           },
           {
-            "DeviceName" : "/dev/sda1",
-            "Ebs" : {
-              "VolumeType" : "gp2",
-              "DeleteOnTermination" : "true",
-              "VolumeSize" : "20"
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeType": "gp2",
+              "DeleteOnTermination": "true",
+              "VolumeSize": "20"
             }
           }
         ],

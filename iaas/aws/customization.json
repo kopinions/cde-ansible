@@ -10,5 +10,17 @@
     {
         "ParameterKey": "SlaveInstanceType",
         "ParameterValue": "m1.medium"
+    },
+    {
+        "ParameterKey": "AvailabilityZone",
+        "ParameterValue": "ap-southeast-1a"
+    },
+    {
+        "ParameterKey": "MasterImageId",
+        "ParameterValue": "ami-be5794dd"
+    },
+    {
+        "ParameterKey": "SlaveImageId",
+        "ParameterValue": "ami-be5794dd"
     }
 ]
