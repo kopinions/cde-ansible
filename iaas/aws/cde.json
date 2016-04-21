@@ -738,6 +738,9 @@
             "Ref": "AvailabilityZone"
           }
         ],
+        "ConnectionSettings" : {
+          "IdleTimeout" : 3600
+        },
         "Listeners": [
           {
             "LoadBalancerPort": "80",
