@@ -120,22 +120,28 @@
 
 	```
 	aws configure
+	``
+3. 配置aws机器以及类型
+
 	```
-3.  初始化aws机器
+	vim iaas/aws/customization.json
+	```
+	更改相应的变量配置
+4. 初始化aws机器
 
 	```
     ./provision.sh cde
 	```
-4. 准备aws hosts 文件
+5. 准备aws hosts 文件
    在运行过```./provision.sh cde```之后,会在iaas/aws/目录下生成当前基础结构的ip,文件名为```infrastructure.json```,根据机器的IP来准备相应的hosts文件,可以参考```hosts_ha```进行相应的准备
-5. 准备相应的extravars.json 文件
+6. 准备相应的extravars.json 文件
     根据生成的infrastructure.json 来准备相应的extravars.json 文件,具体参照<a href="#extravars">基础配置文件</a>
-6. 获取依赖的ansible role
+7. 获取依赖的ansible role
 	
 	```
 	ansible-galaxy install -r playbooks/roles.yml -p playbooks/roles --force
 	```
-7. 基础环境部署
+8. 基础环境部署
 
 	```
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/master.yml
