@@ -5,11 +5,11 @@
     },
     {
         "ParameterKey": "MasterInstanceType",
-        "ParameterValue": "m1.medium"
+        "ParameterValue": "m3.large"
     },
     {
         "ParameterKey": "SlaveInstanceType",
-        "ParameterValue": "m1.medium"
+        "ParameterValue": "m3.xlarge"
     },
     {
         "ParameterKey": "AvailabilityZone",
