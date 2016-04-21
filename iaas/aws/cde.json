@@ -614,38 +614,6 @@
             "FromPort": "-1",
             "ToPort": "-1",
             "SourceSecurityGroupName": {
-              "Ref": "RouterSecurityGroup"
-            }
-          }
-        ]
-      }
-    },
-    "RouterSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Router SecurityGroup",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": {
-              "Ref": "SSHLocation"
-            }
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": {
-              "Ref": "PublicIp"
-            }
-          },
-          {
-            "IpProtocol": "-1",
-            "FromPort": "-1",
-            "ToPort": "-1",
-            "SourceSecurityGroupName": {
               "Ref": "ELBSecurityGroup"
             }
           }
@@ -670,7 +638,7 @@
             "FromPort": "-1",
             "ToPort": "-1",
             "SourceSecurityGroupName": {
-              "Ref": "RouterSecurityGroup"
+              "Ref": "ELBSecurityGroup"
             }
           },
           {
@@ -726,35 +694,7 @@
         }
       }
     },
-    "Slave2Router": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "-1",
-        "FromPort": "-1",
-        "ToPort": "-1",
-        "GroupName": {
-          "Ref": "RouterSecurityGroup"
-        },
-        "SourceSecurityGroupName": {
-          "Ref": "SlaveSecurityGroup"
-        }
-      }
-    },
-    "Master2Router": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "-1",
-        "FromPort": "-1",
-        "ToPort": "-1",
-        "GroupName": {
-          "Ref": "RouterSecurityGroup"
-        },
-        "SourceSecurityGroupName": {
-          "Ref": "MasterSecurityGroup"
-        }
-      }
-    },
-    "Router2ELB": {
+    "Slave2ELB": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "-1",
@@ -764,7 +704,21 @@
           "Ref": "ELBSecurityGroup"
         },
         "SourceSecurityGroupName": {
-          "Ref": "RouterSecurityGroup"
+          "Ref": "SlaveSecurityGroup"
+        }
+      }
+    },
+    "Master2ELB": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "-1",
+        "FromPort": "-1",
+        "ToPort": "-1",
+        "GroupName": {
+          "Ref": "ELBSecurityGroup"
+        },
+        "SourceSecurityGroupName": {
+          "Ref": "MasterSecurityGroup"
         }
       }
     },
