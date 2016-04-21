@@ -51,7 +51,27 @@
   "control_hostname": "192.168.50.101"
 }
 ```
-上面的json文件描述了集群里的一些常用的配置，可以进行适当的更改
+上面的json文件描述了集群里的一些常用的配置，可以进行适当的更改. 其中具体配置项的意思如下表所示:
+
+|字段(以jsonpath的方式描述)|说明|参数值|备注|
+|---|---|---|---|
+|ansible_user|这个值用来设置ansible部署的时候采用的登陆用户|ubuntu/vagrant| |
+|zookeeper_hosts|这个用来配置zookeeper的集群的结构,并且mesos master和marathon需要依赖这个变量来进行ha|[{"address":"xxx", "id":"1"}]| zookeeper的内网IP和对应机器的ID|
+|consul_servers|consul master机器IP列表|["ip1", "ip2"]||
+|consul_bootstrap_expect|当consul server台数达到多少台的时候，进行master的选举|一般等于consul server 的数量||
+|mesos_quorum|quorum是举行投票的法定最低人数|floor(master count /2+1)|总是mesos master 数量一般多一，mesos master的数量为奇数|
+|elasticsearch_masters|elasticsearch 的主控节点|master的ip数组||
+| java |java在ubuntu下的软件包名|oracle-java8-installer|||
+| marathon_env_java_opts| marathon 的java 的虚拟机配置|-Xmx521m||
+|ipaddr|机器的ip|当使用aws机器的时候，只有一张网卡，使用{{ansible_eth0.ipv4.address}}，当使用vagrant的时候有两张网卡，eth0是只能被host和vm通信的网卡，所以使用{{ansible_eth1.ipv4.address}}||
+| ceph_stable |是否使用ceph的stable version|true/false||
+|monitor_interface|ceph monitor监听的网络接口|当使用aws机器的时候，只有一张网卡，使用eth0，当使用vagrant的时候有两张网卡，"eth0"是只能被host和vm通信的网卡，所以使用"eth1"|
+|cluster_network||||
+|public_network||||
+|devices|ceph osd 用来放置数据的单独的磁盘名|在vagrant里面单独加入的磁盘以sd[b,c,d...]的形式存在，所以vagrant可以使用的值为：["/dev/sdb"],使用aws单独添加的磁盘以xvd[b,c,d..]方式存在所以可以使用的值为["/dev/xvdb"]||
+| control_hostname |flocker control的机器ip|ip|参见host文件里的ip|
+
+
 
 
 ### Local env
@@ -119,10 +139,9 @@
 
 	```
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/master.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/elasticsearch.yml
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/slave.yml
+	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/elasticsearch.yml
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/ceph.yml
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-agent.yml
-	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/elasticsearch.yml
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-control.yml
 	```
