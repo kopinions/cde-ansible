@@ -3,8 +3,10 @@
 *.iml
 
 # playbooks
+fetch
 playbooks/roles/*
 playbooks/*.retry
+playbooks/fetch
 !playbooks/roles/ansible-elasticsearch-consul
 !playbooks/roles/ansible-beats-template
 !playbooks/roles/ansible-flocker-agent-with-docker-plugin
@@ -15,3 +17,10 @@ playbooks/*.retry
 
 # infrastructure releated
 iaas/aws/infrastructure.json
+
+#credentials
+*.pem
+
+
+# compiled files
+*.pyc
