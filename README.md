@@ -120,7 +120,7 @@
 
 	```
 	aws configure
-	``
+	```
 3. 配置aws机器以及类型
 
 	```
@@ -151,3 +151,27 @@
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-agent.yml
 	ansible-playbook --extra-vars="@extravars_ha.json" --connection=ssh --timeout=30 --limit='all' --inventory-file=hosts_ha playbooks/flocker-control.yml
 	```
+9. 准备相应的desktop 用来访问相应的管理界面
+	在aws开一台服务器，然后配置desktop，然后访问管理界面
+	配置desktop
+	
+	```
+	sudo vim /etc/ssh/sshd_config # edit line "PasswordAuthentication" to yes
+	sudo /etc/init.d/ssh restart
+	sudo apt-get update
+	sudo apt-get install ubuntu-desktop
+	sudo apt-get install vnc4server
+	vncserver
+
+	vncserver -kill :1
+	
+	vim awsgui/.vnc/xstartup
+   ``` 
+   Then hit the Insert key, scroll around the text file with the keyboard arrows, and delete the pound (#) sign from the beginning of the two lines under the line that says "Uncomment the following two lines for normal desktop." And on the second line add "sh" so the line reads
+   
+	```
+	exec sh /etc/X11/xinit/xinitrc.
+	vncserver
+	```
+
+	config the security group make the desktop can access the masters and slaves.
