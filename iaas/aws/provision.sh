@@ -32,33 +32,31 @@ until [[ $(echo $CREATE_COMPLETE|wc -l) -eq 1 ]] && [[ ! -z $CREATE_COMPLETE ]] 
 done
 
 
-INSTANCE_IDS=$(aws --output text \
-  cloudformation describe-stack-resources --stack-name=$STACK_NAME \
-  --query "StackResources[?ResourceType=='AWS::EC2::Instance'].PhysicalResourceId")
-PASSED_INSTANCE_IDS=$(aws --output=text ec2 describe-instance-status \
-    --filters Name=instance-status.reachability,Values=passed \
-    --instance-ids $INSTANCE_IDS \
-    --query 'InstanceStatuses[].[ InstanceId ]')
-diff <(echo $INSTANCE_IDS|tr ' ' '\n' | sort) <(echo $PASSED_INSTANCE_IDS| tr ' ' '\n' | sort) &>/dev/null
-INITILIZED=$?
-until [[ $INITILIZED -eq 0 ]]; do
-  PASSED_INSTANCE_IDS=$(aws --output=text ec2 describe-instance-status \
-      --filters Name=instance-status.reachability,Values=passed \
-      --instance-ids $INSTANCE_IDS \
-      --query 'InstanceStatuses[].[ InstanceId ]')
-  diff <(echo $INSTANCE_IDS|tr ' ' '\n' | sort) <(echo $PASSED_INSTANCE_IDS| tr ' ' '\n' | sort) &>/dev/null
-  INITILIZED=$?
-  echo "Waitting the instance initilizing"
-  sleep 1
+MASTER_SCALE_GROUP=$(aws --output=text cloudformation describe-stack-resources --stack-name=${STACK_NAME} --query="StackResources[?LogicalResourceId=='MasterGroup'].PhysicalResourceId")
+MASTER_HEALTH_COUNT=$(aws autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${MASTER_SCALE_GROUP} --query "AutoScalingGroups[].Instances[?HealthStatus=='Healthy'][]" |jq 'length')
+MASTER_COUNT=$(aws --output=text cloudformation describe-stacks --stack-name=${STACK_NAME} --query="Stacks[][Parameters][][?ParameterKey=='MasterCount'].ParameterValue")
+echo "Wait master init"
+until [[ $MASTER_HEALTH_COUNT -eq "$MASTER_COUNT" ]]; do
+    echo "Wait master init"
+    MASTER_HEALTH_COUNT=$(aws autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${MASTER_SCALE_GROUP} --query "AutoScalingGroups[].Instances[?HealthStatus=='Healthy'][]"|jq 'length')
+done
+
+
+SLAVE_SCALE_GROUP=$(aws --output=text cloudformation describe-stack-resources --stack-name=${STACK_NAME} --query="StackResources[?LogicalResourceId=='SlaveGroup'].PhysicalResourceId")
+SLAVE_HEALTH_COUNT=$(aws autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${SLAVE_SCALE_GROUP} --query "AutoScalingGroups[].Instances[?HealthStatus=='Healthy'][]"|jq 'length')
+SLAVE_COUNT=$(aws --output=text cloudformation describe-stacks --stack-name=${STACK_NAME} --query="Stacks[][Parameters][][?ParameterKey=='SlaveCount'].ParameterValue")
+echo "Wait slave init"
+until [[ $SLAVE_HEALTH_COUNT -eq $SLAVE_COUNT ]]; do
+    echo "Wait slave init"
+    SLAVE_HEALTH_COUNT=$(aws autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${SLAVE_SCALE_GROUP} --query "AutoScalingGroups[].Instances[?HealthStatus=='Healthy'][]"|jq 'length')
 done
 
 echo "All instance are initilized"
-export ANSIBLE_HOST_KEY_CHECKING=False
-OUTPUTS=$(aws cloudformation describe-stacks --stack-name=$STACK_NAME --query "Stacks[?StackName=='"$STACK_NAME"'].Outputs")
-MASTERS=$(echo "$OUTPUTS"|jq -r '.[0][0].OutputValue')
-SLAVES=$(echo "$OUTPUTS"|jq -r '.[0][1].OutputValue')
-MASTER_JSON=$(echo $MASTERS|jq -R 'split("|")|map(split(" ")|{"public":.[0], "private":.[1]})')
-SLAVE_JSON=$(echo $SLAVES|jq -R 'split("|")|map(split(" ")|{"public":.[0], "private":.[1]})')
-jq -n --argjson master "$MASTER_JSON" --argjson slave "$SLAVE_JSON" '{"master": $master, "slave": $slave}' > infrastructure.json
+MASTERS_IDS=$(aws --output=text autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${MASTER_SCALE_GROUP} --query "AutoScalingGroups[].Instances[].InstanceId")
+SLAVE_IDS=$(aws --output=text autoscaling  describe-auto-scaling-groups --auto-scaling-group-names=${SLAVE_SCALE_GROUP} --query "AutoScalingGroups[].Instances[].InstanceId")
 
+MASTER_JSON=$(aws ec2 describe-instances --instance-ids $MASTERS_IDS --query="Reservations[].Instances[]"|jq 'map({"public":.PublicIpAddress, "private": .PrivateIpAddress})')
+SLAVE_JSON=$(aws ec2 describe-instances --instance-ids $SLAVE_IDS --query="Reservations[].Instances[]"|jq 'map({"public":.PublicIpAddress, "private": .PrivateIpAddress})')
+
+jq -n --argjson master "$MASTER_JSON" --argjson slave "$SLAVE_JSON" '{"master": $master, "slave": $slave}' > infrastructure.json
 echo "Address all in the infrastructure.json file"

@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "SlaveInstanceType",
-        "ParameterValue": "m3.xlarge"
+        "ParameterValue": "m1.large"
     },
     {
         "ParameterKey": "AvailabilityZone",
@@ -22,5 +22,13 @@
     {
         "ParameterKey": "SlaveImageId",
         "ParameterValue": "ami-be5794dd"
+    },
+    {
+        "ParameterKey": "MasterCount",
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "SlaveCount",
+        "ParameterValue": "3"
     }
 ]

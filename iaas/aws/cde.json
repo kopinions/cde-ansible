@@ -16,6 +16,18 @@
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
     },
+    "MasterCount": {
+      "Description": "The count of the master",
+      "Type": "Number",
+      "Default": "3",
+      "MinValue": "1"
+    },
+    "SlaveCount": {
+      "Description": "The count of the slave",
+      "Type": "Number",
+      "Default": "3",
+      "MinValue": "3"
+    },
     "MasterInstanceType": {
       "Description": "Master EC2 instance type",
       "Type": "String",
@@ -738,8 +750,8 @@
             "Ref": "AvailabilityZone"
           }
         ],
-        "ConnectionSettings" : {
-          "IdleTimeout" : 3600
+        "ConnectionSettings": {
+          "IdleTimeout": 3600
         },
         "Listeners": [
           {
@@ -778,40 +790,32 @@
             }
           }
         ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "6b007234-506e-42ac-b2a9-2be24bf17392"
-        }
       }
     },
-    "Master1": {
-      "Type": "AWS::EC2::Instance",
+    "MasterConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
+        "ImageId": {
+          "Ref": "MasterImageId"
+        },
+        "InstanceType": {
+          "Ref": "MasterInstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
         "SecurityGroups": [
           {
             "Ref": "MasterSecurityGroup"
           }
         ],
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "InstanceType": {
-          "Ref": "MasterInstanceType"
-        },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
-        "ImageId": {
-          "Ref": "MasterImageId"
-        },
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/sdb",
             "Ebs": {
               "VolumeType": "standard",
               "DeleteOnTermination": "true",
-              "VolumeSize": "20"
+              "VolumeSize": "100"
             }
           },
           {
@@ -819,10 +823,28 @@
             "Ebs": {
               "VolumeType": "gp2",
               "DeleteOnTermination": "true",
-              "VolumeSize": "20"
+              "VolumeSize": "100"
             }
           }
+        ]
+      }
+    },
+    "MasterGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [
+          {
+            "Ref": "AvailabilityZone"
+          }
         ],
+        "LaunchConfigurationName": {
+          "Ref": "MasterConfig"
+        },
+        "MinSize": "1",
+        "MaxSize": "3",
+        "DesiredCapacity" : {
+          "Ref": "MasterCount"
+        },
         "Tags": [
           {
             "Key": "Name",
@@ -836,165 +858,36 @@
                   "Master"
                 ]
               ]
-            }
+            },
+            "PropagateAtLaunch" : "true"
           }
         ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "0e516841-5728-480f-84e2-b027390944f3"
-        }
       }
     },
-    "Master2": {
-      "Type": "AWS::EC2::Instance",
+    "SlaveConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "SecurityGroupIds": [
-          {
-            "Ref": "MasterSecurityGroup"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "InstanceType": {
-          "Ref": "MasterInstanceType"
-        },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
         "ImageId": {
-          "Ref": "MasterImageId"
-        },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sdb",
-            "Ebs": {
-              "VolumeType": "standard",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          },
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "VolumeType": "gp2",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  "Master"
-                ]
-              ]
-            }
-          }
-        ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "5a693ff3-6ad0-4447-8e5b-458587193d57"
-        }
-      }
-    },
-    "Master3": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "SecurityGroupIds": [
-          {
-            "Ref": "MasterSecurityGroup"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "InstanceType": {
-          "Ref": "MasterInstanceType"
-        },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
-        "ImageId": {
-          "Ref": "MasterImageId"
-        },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sdb",
-            "Ebs": {
-              "VolumeType": "standard",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          },
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "VolumeType": "gp2",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  "Master"
-                ]
-              ]
-            }
-          }
-        ]
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "d3196b43-8794-44b9-995c-4880355b95be"
-        }
-      }
-    },
-    "Slave1": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "SecurityGroupIds": [
-          {
-            "Ref": "SlaveSecurityGroup"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
+          "Ref": "SlaveImageId"
         },
         "InstanceType": {
           "Ref": "SlaveInstanceType"
         },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
+        "KeyName": {
+          "Ref": "KeyName"
         },
-        "ImageId": {
-          "Ref": "SlaveImageId"
-        },
+        "SecurityGroups": [
+          {
+            "Ref": "SlaveSecurityGroup"
+          }
+        ],
         "BlockDeviceMappings": [
           {
             "DeviceName": "/dev/sdb",
             "Ebs": {
               "VolumeType": "standard",
               "DeleteOnTermination": "true",
-              "VolumeSize": "20"
+              "VolumeSize": "100"
             }
           },
           {
@@ -1002,66 +895,28 @@
             "Ebs": {
               "VolumeType": "gp2",
               "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  "Slave1"
-                ]
-              ]
+              "VolumeSize": "100"
             }
           }
         ]
       }
     },
-    "Slave2": {
-      "Type": "AWS::EC2::Instance",
+    "SlaveGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
-        "SecurityGroupIds": [
+        "AvailabilityZones": [
           {
-            "Ref": "SlaveSecurityGroup"
+            "Ref": "AvailabilityZone"
           }
         ],
-        "KeyName": {
-          "Ref": "KeyName"
+        "LaunchConfigurationName": {
+          "Ref": "SlaveConfig"
         },
-        "InstanceType": {
-          "Ref": "SlaveInstanceType"
+        "DesiredCapacity" : {
+          "Ref": "SlaveCount"
         },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
-        "ImageId": {
-          "Ref": "SlaveImageId"
-        },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sdb",
-            "Ebs": {
-              "VolumeType": "standard",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          },
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "VolumeType": "gp2",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          }
-        ],
+        "MinSize": "3",
+        "MaxSize": "100",
         "Tags": [
           {
             "Key": "Name",
@@ -1072,205 +927,15 @@
                   {
                     "Ref": "AWS::StackName"
                   },
-                  "Slave2"
+                  "Slave"
                 ]
               ]
-            }
-          }
-        ]
-      }
-    },
-    "Slave3": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "SecurityGroupIds": [
-          {
-            "Ref": "SlaveSecurityGroup"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "InstanceType": {
-          "Ref": "SlaveInstanceType"
-        },
-        "AvailabilityZone": {
-          "Ref": "AvailabilityZone"
-        },
-        "ImageId": {
-          "Ref": "SlaveImageId"
-        },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sdb",
-            "Ebs": {
-              "VolumeType": "standard",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          },
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "VolumeType": "gp2",
-              "DeleteOnTermination": "true",
-              "VolumeSize": "20"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  "Slave3"
-                ]
-              ]
-            }
+            },
+            "PropagateAtLaunch" : "true"
           }
         ]
       }
     }
   },
-  "Outputs": {
-    "Masters": {
-      "Description": "Masters",
-      "Value": {
-        "Fn::Join": [
-          "|",
-          [
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Master1",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Master1",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            },
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Master2",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Master2",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            },
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Master3",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Master3",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
-        ]
-      }
-    },
-    "Slaves": {
-      "Description": "Slaves",
-      "Value": {
-        "Fn::Join": [
-          "|",
-          [
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Slave1",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Slave1",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            },
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Slave2",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Slave2",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            },
-            {
-              "Fn::Join": [
-                " ",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "Slave3",
-                      "PublicIp"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "Slave3",
-                      "PrivateIp"
-                    ]
-                  }
-                ]
-              ]
-            }
-          ]
-        ]
-      }
-    }
-  }
+  "Outputs": {}
 }
