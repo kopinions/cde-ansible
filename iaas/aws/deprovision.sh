@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 STACK_NAME=${STACK_NAME:=cde}
+aws cloudformation describe-stacks --stack-name=newcde
+if [[ $? -ne 0 ]]; then
+    echo "Stack not exits"
+    exit 1
+fi
+
 aws cloudformation delete-stack --stack-name=$STACK_NAME
 COMPLETE_EVENT=$(aws --output=text cloudformation describe-stack-events --stack-name=$STACK_NAME --query "StackEvents[?ResourceStatus=='DELETE_COMPLETE' && ResourceType=='AWS::CloudFormation::Stack']")
 if [[ $? -ne 0 ]] && [[ $(echo $COMPLETE_EVENT|grep "not exist") -eq 0 ]]; then
