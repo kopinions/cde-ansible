@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 STACK_NAME=${STACK_NAME:=cde}
-aws cloudformation describe-stacks --stack-name=newcde
+aws cloudformation describe-stacks --stack-name=$STACK_NAME
 if [[ $? -ne 0 ]]; then
     echo "Stack not exits"
     exit 1
