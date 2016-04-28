@@ -9,3 +9,8 @@ mesos_quorum: 2
 mesos_additional_configs:
   - name: LOG_LEVEL
     value: WARNING
+mesos_master_additional_flags:
+  - quiet
+mesos_master_additional_config:
+  - name: logging_level
+    value: WARNING

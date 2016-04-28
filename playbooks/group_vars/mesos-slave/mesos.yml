@@ -8,3 +8,9 @@ mesos_install_mode: "slave"
 mesos_additional_configs:
   - name: LOG_LEVEL
     value: WARNING
+
+mesos_slave_additional_flags:
+  - quiet
+mesos_slave_additional_config:
+  - name: logging_level
+    value: WARNING
