@@ -1,0 +1,21 @@
+---
+# - name: Install packages
+#   apt: name={{item}} state=installed update_cache=yes
+#   with_items:
+#     - git-core
+#     - librados-dev
+#     - librbd-dev
+#     - gcc
+
+- name: Install plugin
+  copy: src=rbd-docker-plugin dest=/usr/local/bin/ mode=755
+
+- name: Copy ceph keyring
+  copy:
+    src: fetch/{{ fsid }}/etc/ceph/ceph.client.admin.keyring
+    dest: /etc/ceph
+
+- name: Set plugin config
+  copy: src=service dest=/etc/init/rbd-docker-plugin.conf
+  notify:
+    - Restart rbd docker plugin

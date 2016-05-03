@@ -1,0 +1,10 @@
+# rbd-docker-plugin
+
+description "Rbd docker plugin service"
+
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+
+exec rbd-docker-plugin --create

@@ -1,0 +1,5 @@
+---
+- hosts: rbd
+  become: yes
+  roles:
+    - ansible-rbd-docker-driver
