@@ -1,7 +1,9 @@
 ---
 - name: install the docker clean cron
-  cron: name="docker clean" job="docker ps -a -q -f 'status=exited'|xargs docker rm" backup=yes state=present
+  cron: name="docker clean" job="docker ps -a -q -f 'status=exited' -f 'status=created' -f 'status=dead' |xargs docker rm" backup=yes state=present
 
 - name: install the docker image clean
   cron: name="docker image clean" job="docker images -q -f 'dangling=true'|xargs docker rmi" backup=yes state=present
 
+- name: install the docker volume clean
+  cron: name="docker volume clean" job="docker volume ls -qf dangling=true | xargs -r docker volume rm" backup=yes state=present
