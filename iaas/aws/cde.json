@@ -165,7 +165,8 @@
       "Type": "String",
       "Default": "ap-southeast-1a",
       "AllowedValues": [
-        "ap-southeast-1a"
+        "ap-southeast-1a",
+        "ap-northeast-1a"
       ]
     },
     "SSHLocation": {
