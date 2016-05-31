@@ -15,7 +15,17 @@
     src: fetch/{{ fsid }}/etc/ceph/ceph.client.admin.keyring
     dest: /etc/ceph
 
+- command: /bin/true
+  notify:
+      - stop docker
+
 - name: Set plugin config
   copy: src=service dest=/etc/init/rbd-docker-plugin.conf
+
+- command: /bin/true
   notify:
     - Restart rbd docker plugin
+
+- command: /bin/true
+  notify:
+      - start docker

@@ -1,4 +1,10 @@
 ---
 
 - name: Restart rbd docker plugin
-  service: name=rbd-docker-plugin state=started
+  service: name=rbd-docker-plugin state=restarted
+
+- name: stop docker
+  service: name=docker state=stopped
+
+- name: start docker
+  service: name=docker state=started
