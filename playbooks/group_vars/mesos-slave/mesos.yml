@@ -1,8 +1,8 @@
 ---
 mesos_ip: "{{ ipaddr }}"
 mesos_hostname: "{{ ipaddr }}"
-mesos_version: '0.28.0'
-mesos_package_version: '2.0.16'
+mesos_version: '0.28.2'
+mesos_package_version: '2.0.27'
 mesos_containerizers: "docker,mesos"
 mesos_install_mode: "slave"
 mesos_additional_configs:
