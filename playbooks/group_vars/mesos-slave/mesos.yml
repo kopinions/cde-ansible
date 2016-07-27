@@ -14,3 +14,5 @@ mesos_slave_additional_flags:
 mesos_slave_additional_config:
   - name: logging_level
     value: WARNING
+  - name: resources
+    value: cpus:3;mem:5632;disk:102400;ports:[21000-24000,30000-34000];
