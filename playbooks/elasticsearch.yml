@@ -15,6 +15,8 @@
         bootstrap.mlockall: false
         network.bind_host: 0.0.0.0
         network.publish_host: "{{ipaddr}}"
+        index.number_of_shards: 10
+        index.number_of_replicas: 1
   vars:
     es_scripts: false
     es_templates: false
@@ -42,6 +44,8 @@
         bootstrap.mlockall: false
         network.bind_host: 0.0.0.0
         network.publish_host: "{{ipaddr}}"
+        index.number_of_shards: 10
+        index.number_of_replicas: 1
   vars:
     es_scripts: false
     es_templates: false
