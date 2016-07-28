@@ -1,6 +1,7 @@
 ---
 - hosts: elasticsearch-master
   roles:
+    - role: ansible-java8
     - role: ansible-elasticsearch
       es_instance_name: "{{inventory_hostname}}"
       es_heap_size: "1g"
@@ -30,6 +31,7 @@
 
 - hosts: elasticsearch-node
   roles:
+    - role: ansible-java8
     - role: ansible-elasticsearch
       es_instance_name: "{{inventory_hostname}}"
       es_data_dirs: "/opt/elasticsearch"
@@ -59,5 +61,6 @@
 
 - hosts: elasticsearch-master
   roles:
+    - role: ansible-java8
     - role: ansible-beats-template
     - role: ansible-elasticsearch-consul
