@@ -18,12 +18,13 @@
 - hosts: mesos-master
   sudo: yes
   roles:
+    - role: ansible-docker
     - role: ansible-mesos
 
 - hosts: marathon
   sudo: yes
   roles:
-    - ansible-marathon
+    - role: ansible-marathon
 
 - hosts: zookeeper
   sudo: yes
@@ -34,8 +35,3 @@
   sudo: yes
   roles:
     - ansible-marathon-consul
-
-- hosts: mesos-master
-  roles:
-    - ansible-topbeat
-    - ansible-logstash

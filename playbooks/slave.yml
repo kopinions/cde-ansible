@@ -2,11 +2,7 @@
 - hosts: mesos-slave
   sudo: yes
   roles:
-    - ansible-dnsmasq
     - ansible-maintain
     - ansible-docker
     - ansible-consul
     - ansible-mesos
-    - ansible-java8
-    - ansible-topbeat
-    - ansible-logstash
