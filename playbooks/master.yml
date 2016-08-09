@@ -1,8 +1,4 @@
 ---
-- hosts: mesos-master
-  sudo: yes
-  roles:
-    - ansible-dnsmasq
 
 - hosts: zookeeper
   sudo: yes
