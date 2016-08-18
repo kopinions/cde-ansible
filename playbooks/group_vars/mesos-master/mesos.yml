@@ -14,6 +14,8 @@ mesos_master_additional_flags:
 mesos_master_additional_config:
   - name: logging_level
     value: WARNING
+  - name: roles
+    value: system
 
 mesos_slave_additional_flags:
   - quiet
@@ -21,6 +23,4 @@ mesos_slave_additional_config:
   - name: logging_level
     value: WARNING
   - name: resources
-    value: cpus:0;mem:0;disk:0;ports:[];cpus(system):0.5;mem(system):1536;disk(system):10240;ports(system):[1-1024, 5000-10000];
-  - name: roles
-    value: system,*
+    value: cpus:0;mem:0;disk:0;ports:[];cpus(system):0.5;mem(system):1536;disk(system):10240;ports(system):[1-10000];
