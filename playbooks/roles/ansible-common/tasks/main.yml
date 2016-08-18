@@ -1,0 +1,9 @@
+---
+- name: remove localhost dns
+  lineinfile: dest=/etc/resolv.conf state=absent regexp='127\.0\.0\.1'
+
+- name: remove local dns
+  lineinfile: dest=/etc/resolv.conf state=absent regexp="{{ipaddr}}"
+
+- name: add dns server
+  lineinfile: dest=/etc/resolv.conf state=present line="nameserver {{ipaddr}}" insertbefore=BOF

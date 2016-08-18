@@ -2,6 +2,7 @@
 - hosts: mesos-slave
   sudo: yes
   roles:
+    - ansible-common
     - ansible-maintain
     - ansible-docker
     - ansible-consul
