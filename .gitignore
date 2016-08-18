@@ -19,6 +19,7 @@ playbooks/fetch
 
 # infrastructure releated
 iaas/aws/infrastructure.json
+iaas/aliyun/infrastructure.json
 
 #credentials
 *.pem
