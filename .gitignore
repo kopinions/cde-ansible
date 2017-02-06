@@ -27,3 +27,5 @@ iaas/aliyun/infrastructure.json
 
 # compiled files
 *.pyc
+
+.DS_Store
