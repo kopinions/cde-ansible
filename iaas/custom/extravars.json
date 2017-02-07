@@ -1,0 +1,42 @@
+{
+  "ansible_user": "twer",
+  "ansible_ssh_user": "twer",
+  "ansible_ssh_pass": "Th0ughtW0rks@2016",
+  "zookeeper_hosts": [
+    {
+      "address": "10.202.5.44",
+      "id": 1
+    }
+  ],
+  "elasticsearch_endpoint": "10.202.5.41:9200",
+  "consul_servers": [
+    "10.202.5.44"
+  ],
+  "consul_bootstrap_expect": 1,
+  "mesos_quorum": 1,
+  "elasticsearch_masters": [
+    "10.202.5.41"
+  ],
+  "java": "oracle-java8-installer",
+  "marathon_env_java_opts": "-Xmx512m",
+  "ipaddr": "{{ansible_eth0.ipv4.address}}",
+  "ceph_stable": "true",
+  "journal_collocation": "true",
+  "journal_size": 100,
+  "monitor_interface": "eth0",
+  "cluster_network": "10.29.0.0/16",
+  "public_network": "10.29.0.0/16",
+  "devices": [
+    "/dev/sdb"
+  ],
+  "os_tuning_params": [
+    {
+      "name": "kernel.pid_max",
+      "value": 4194303
+    },
+    {
+      "name": "fs.file-max",
+      "value": 26234859
+    }
+  ]
+}
