@@ -20,6 +20,8 @@
 
 - src: https://github.com/ceph/ansible-ceph-osd.git
 
+- src: https://github.com/ceph/ansible-ceph-client.git
+
 - src: https://github.com/ceph/ansible-ceph-fetch-keys.git
 
 - src: https://github.com/tw-cde/ansible-logstash.git
