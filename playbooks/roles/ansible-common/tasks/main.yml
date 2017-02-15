@@ -1,9 +1,22 @@
 ---
-- name: remove localhost dns
-  lineinfile: dest=/etc/resolv.conf state=absent regexp='127\.0\.0\.1'
 
-- name: remove local dns
-  lineinfile: dest=/etc/resolv.conf state=absent regexp="{{ipaddr}}"
+- name: resolvconf remove dnsmasq nameserver
+  shell: resolvconf -d lo.dnsmasq
 
-- name: add dns server
-  lineinfile: dest=/etc/resolv.conf state=present line="nameserver {{ipaddr}}" insertbefore=BOF
+- name: resolvconf to add the dnsmasq nameserver
+  shell: echo "nameserver {{ipaddr}}"| resolvconf -a lo.dnsmasq
+
+- name: change resov base to remove the dnsmasq nameserver
+  lineinfile: dest=/etc/resolvconf/resolv.conf.d/base state=absent regexp="nameserver {{ipaddr}}"
+
+- name: update resolvconf
+  shell: resolvconf -u
+
+- name: change resov base to remove the dnsmasq nameserver
+  lineinfile: dest=/etc/resolvconf/resolv.conf.d/base state=present line="nameserver {{ipaddr}}" insertbefore=BOF
+
+- name: remove nameserver config under dhcp clinet config
+  lineinfile: dest=/etc/dhcp/dhclient.conf state=absent regexp="prepend domain-name-servers {{ipaddr}};"
+
+- name: add nameserver config under dhcp clinet config
+  lineinfile: dest=/etc/dhcp/dhclient.conf state=present line="prepend domain-name-servers {{ipaddr}};" insertbefore=BOF
