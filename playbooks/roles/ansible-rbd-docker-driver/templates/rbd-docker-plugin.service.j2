@@ -1,0 +1,13 @@
+[Unit]
+Description=rbd docker driver
+
+[Service]
+EnvironmentFile=-/etc/environment
+ExecStart=/usr/local/bin/rbd-docker-plugin --create
+Restart=always
+RestartSec=10s
+TimeoutStartSec=120
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

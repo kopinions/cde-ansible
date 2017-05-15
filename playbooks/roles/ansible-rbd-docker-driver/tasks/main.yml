@@ -10,21 +10,26 @@
 - name: Install plugin
   copy: src=rbd-docker-plugin dest=/usr/local/bin/ mode=755
 
-- name: Copy ceph keyring
-  copy:
-    src: fetch/{{ fsid }}/etc/ceph/ceph.client.admin.keyring
-    dest: /etc/ceph
+- file:
+    path: /etc/init/rbd-docker-plugin.conf
+    state: absent
+
+- name: generate systemd unit file
+  become: true
+  template:
+    src: "rbd-docker-plugin.service.j2"
+    dest: /etc/systemd/system/rbd-docker-plugin.service
+    owner: "root"
+    group: "root"
+    mode: "0644"
 
 - command: /bin/true
   notify:
       - stop docker
 
-- name: Set plugin config
-  copy: src=service dest=/etc/init/rbd-docker-plugin.conf
-
 - command: /bin/true
   notify:
-    - Restart rbd docker plugin
+    - restarted rbd docker plugin
 
 - command: /bin/true
   notify:

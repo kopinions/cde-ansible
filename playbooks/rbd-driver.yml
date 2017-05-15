@@ -1,6 +1,0 @@
----
-- hosts: rbd
-  become: yes
-  roles:
-    - ansible-ceph-client
-    - ansible-rbd-docker-driver
