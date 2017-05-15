@@ -9,11 +9,3 @@
 - src: https://github.com/tw-cde/ansible-marathon.git
 
 - src: https://github.com/tw-cde/ansible-elasticsearch.git
-
-- src: https://github.com/ceph/ansible-ceph-mon.git
-
-- src: https://github.com/ceph/ansible-ceph-osd.git
-
-- src: https://github.com/ceph/ansible-ceph-client.git
-
-- src: https://github.com/ceph/ansible-ceph-fetch-keys.git
