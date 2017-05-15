@@ -5,5 +5,4 @@
     - ansible-common
     - ansible-maintain
     - ansible-docker
-    - ansible-consul
     - ansible-mesos

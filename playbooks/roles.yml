@@ -1,9 +1,5 @@
 - src: https://github.com/tw-cde/ansible-zookeeper.git
 
-- src: https://github.com/tw-cde/ansible-dnsmasq.git
-
-- src: https://github.com/tw-cde/ansible-consul.git
-
 - src: https://github.com/tw-cde/ansible-java8.git
 
 - src: https://github.com/tw-cde/ansible-docker.git
@@ -11,8 +7,6 @@
 - src: https://github.com/tw-cde/ansible-mesos.git
 
 - src: https://github.com/tw-cde/ansible-marathon.git
-
-- src: https://github.com/tw-cde/ansible-topbeat.git
 
 - src: https://github.com/tw-cde/ansible-elasticsearch.git
 
@@ -23,5 +17,3 @@
 - src: https://github.com/ceph/ansible-ceph-client.git
 
 - src: https://github.com/ceph/ansible-ceph-fetch-keys.git
-
-- src: https://github.com/tw-cde/ansible-logstash.git

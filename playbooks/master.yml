@@ -6,11 +6,6 @@
     - ansible-java8
     - ansible-zookeeper
 
-- hosts: consul-server
-  sudo: yes
-  roles:
-    - role: ansible-consul
-
 - hosts: mesos-master
   sudo: yes
   roles:
@@ -22,13 +17,3 @@
   sudo: yes
   roles:
     - role: ansible-marathon
-
-- hosts: zookeeper
-  sudo: yes
-  roles:
-    - ansible-zookeeper-consul
-
-- hosts: marathon
-  sudo: yes
-  roles:
-    - ansible-marathon-consul
