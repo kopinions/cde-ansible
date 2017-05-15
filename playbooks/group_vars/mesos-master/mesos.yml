@@ -19,9 +19,11 @@ mesos_master_additional_configs:
 mesos_slave_additional_flags:
   - quiet
 mesos_slave_additional_configs:
-  - name: logging_level
+  - name: QUIET
+    value: true
+  - name: LOGGING_LEVEL
     value: WARNING
-  - name: resources
-    value: cpus:0;mem:0;disk:0;ports:[];cpus(system):0.5;mem(system):1536;disk(system):10240;ports(system):[1-10000];
-  - name: attributes
-    value: "role:consul-master;"
+  - name: RESOURCES
+    value: '"cpus:0;mem:0;disk:0;ports:[];cpus(system):0.5;mem(system):1536;disk(system):10240;ports(system):[1-10000];"'
+  - name: ATTRIBUTES
+    value: '"role:consul-master;"'

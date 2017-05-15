@@ -8,10 +8,10 @@ mesos_additional_configs:
   - name: LOG_LEVEL
     value: WARNING
 
-mesos_slave_additional_flags:
-  - quiet
 mesos_slave_additional_configs:
-  - name: logging_level
+  - name: QUIET
+    value: true
+  - name: LOGGING_LEVEL
     value: WARNING
-  - name: resources
-    value: cpus:1.2;mem:3000;disk:102400;ports:[20000-60000];cpus(system):0.5;mem(system):1024;disk(system):10240;ports(system):[1-10000];
+  - name: RESOURCES
+    value: '"cpus:1.2;mem:3000;disk:102400;ports:[20000-60000];cpus(system):0.5;mem(system):1024;disk(system):10240;ports(system):[1-10000];"'
