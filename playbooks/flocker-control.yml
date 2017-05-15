@@ -1,5 +1,0 @@
----
-- hosts: flocker-control
-  become: True
-  roles:
-    - role: 'ansible-flocker-control'

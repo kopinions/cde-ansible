@@ -62,3 +62,10 @@
       osd_containerized_deployment: false
       bootstrap_dirs_owner: 64045
       bootstrap_dirs_group: 64045
+
+- hosts: mesos-slave
+  become: True
+  roles:
+    - role: ansible-docker
+    - role: ceph-client
+    - role: ansible-rbd-docker-driver
