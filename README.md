@@ -1,5 +1,8 @@
 # CDE PAAS 
 
+## 系统部署架构
+![](./assets/infra.jpg)
+
 ### Requirements
 1. Ansible 2.0.0
 
