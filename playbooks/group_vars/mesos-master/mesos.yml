@@ -1,8 +1,7 @@
 ---
 mesos_ip: "{{ ipaddr }}"
 mesos_hostname: "{{ ipaddr }}"
-mesos_version: '0.28.2'
-mesos_package_version: '2.0.27'
+mesos_apt_package: "mesos=1.2.0-2.0.6"
 mesos_containerizers: "docker,mesos"
 mesos_install_mode: "master-slave"
 mesos_quorum: 2
@@ -11,7 +10,7 @@ mesos_additional_configs:
     value: WARNING
 mesos_master_additional_flags:
   - quiet
-mesos_master_additional_config:
+mesos_master_additional_configs:
   - name: logging_level
     value: WARNING
   - name: roles
@@ -19,7 +18,7 @@ mesos_master_additional_config:
 
 mesos_slave_additional_flags:
   - quiet
-mesos_slave_additional_config:
+mesos_slave_additional_configs:
   - name: logging_level
     value: WARNING
   - name: resources
