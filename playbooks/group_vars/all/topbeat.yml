@@ -1,8 +1,0 @@
----
-topbeat_elasticsearch_url: 'http://elasticsearch.service.consul:9200'
-topbeat_logstash_host: "localhost"
-topbeat_logstash_beats_port: 5044
-topbeat_output_elasticsearch: true
-topbeat_output_logstash: false
-beats_repository_url: "https://packages.elastic.co/beats/apt"
-topbeat_package: "topbeat"
