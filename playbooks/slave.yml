@@ -37,7 +37,9 @@
 - hosts: mesos-slave
   sudo: yes
   roles:
-    - ansible-common
-    - ansible-maintain
-    - ansible-docker
-    - ansible-mesos
+    - role: ansible-common
+    - role: ansible-maintain
+    - role: ansible-docker
+      docker_pkg_name: docker-engine=1.12.6-0~ubuntu-xenial
+      docker_opts: "--ip={{ipaddr}} --dns={{ipaddr}} --insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16 --insecure-registry registry.service.consul:31500"
+    - role: ansible-mesos

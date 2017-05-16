@@ -6,12 +6,10 @@ mesos_containerizers: "docker,mesos"
 mesos_install_mode: "slave"
 mesos_additional_configs:
   - name: LOG_LEVEL
-    value: WARNING
+    value: INFO
 
 mesos_slave_additional_configs:
-  - name: QUIET
-    value: true
   - name: LOGGING_LEVEL
-    value: WARNING
+    value: INFO
   - name: RESOURCES
     value: '"cpus:1.2;mem:3000;disk:102400;ports:[20000-60000];cpus(system):0.5;mem(system):1024;disk(system):10240;ports(system):[1-10000];"'
