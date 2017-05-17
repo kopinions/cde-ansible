@@ -3,6 +3,7 @@
 - src: https://github.com/tw-cde/ansible-java8.git
 
 - src: https://github.com/tw-cde/ansible-docker.git
+  version: b815e608c0a0a2a757c5ab53b5ff25ea4d0a1ec6
 
 - src: https://github.com/tw-cde/ansible-mesos.git
 
