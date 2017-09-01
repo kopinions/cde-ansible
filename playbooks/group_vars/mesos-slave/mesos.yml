@@ -12,4 +12,4 @@ mesos_slave_additional_configs:
   - name: LOGGING_LEVEL
     value: INFO
   - name: RESOURCES
-    value: '"cpus:1.2;mem:3000;disk:102400;ports:[20000-60000];cpus(system):0.5;mem(system):1536;disk(system):10240;ports(system):[1-10000];"'
+    value: '"cpus:6;mem:27000;disk:102400;ports:[20000-60000];cpus(system):0.5;mem(system):2560;disk(system):10240;ports(system):[1-10000];"'
